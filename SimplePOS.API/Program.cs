@@ -2,6 +2,8 @@ using SimplePOS.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Registro manual de AutoMapper
+
 //Agrega servicios de infraestructura (DbContext + Identity)
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
