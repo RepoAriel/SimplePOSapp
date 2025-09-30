@@ -1,14 +1,16 @@
+using AutoMapper;
+using SimplePOS.Business.Mapping;
 using SimplePOS.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Registro manual de AutoMapper
+//Registro de AutoMapper
+builder.Services.AddAutoMapper(mc => {mc.AddProfile(new SimplePOSProfile());});
 
 //Agrega servicios de infraestructura (DbContext + Identity)
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
