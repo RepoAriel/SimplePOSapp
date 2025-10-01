@@ -1,4 +1,5 @@
 using AutoMapper;
+using SimplePOS.Business.Extensions;
 using SimplePOS.Business.Mapping;
 using SimplePOS.Infrastructure.Extensions;
 
@@ -7,8 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 //Registro de AutoMapper
 builder.Services.AddAutoMapper(mc => {mc.AddProfile(new SimplePOSProfile());});
 
-//Agrega servicios de infraestructura (DbContext + Identity)
+//Agrega servicios de la capa Infrastructure (DbContext + Identity)
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+//Agrega servicios de la capa Business
+builder.Services.AddBusinessServices(); 
 
 // Add services to the container.
 builder.Services.AddControllers();

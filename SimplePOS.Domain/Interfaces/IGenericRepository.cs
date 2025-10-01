@@ -10,7 +10,7 @@ namespace SimplePOS.Domain.Interfaces
     public interface IGenericRepository<T> where T : class
     {
         Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null);
-        Task<T?> GetByIdAsync(int id, string? includProperties = null);
+        Task<T?> GetByIdAsync(int id, string? includeProperties = null);
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, string? includeProperties = null);
 
         Task AddAsync(T entity);

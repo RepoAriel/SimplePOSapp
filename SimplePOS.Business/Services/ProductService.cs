@@ -30,7 +30,7 @@ namespace SimplePOS.Business.Services
 
         public async Task<ProductReadDto> GetByIdAsync(int id)
         {
-            var product = await productRepo.GetByIdAsync(id, includProperties: "Category");
+            var product = await productRepo.GetByIdAsync(id, includeProperties: "Category");
             if (product == null)
                 throw new Exception("Producto no encontrado");
 
@@ -39,9 +39,13 @@ namespace SimplePOS.Business.Services
 
         public async Task<ProductReadDto> CreateAsync(ProductCreateDto dto)
         {
+            var existing = await productRepo.FindAsync(p => p.Name.ToLower() == dto.Name.ToLower());
+            if(existing.Any())
+                throw new Exception("Ya existe un producto con ese nombre");
             var product = mapper.Map<Product>(dto);
             product.IsActive = true;
             await productRepo.AddAsync(product);
+            await productRepo.SaveChangesAsync();
             return mapper.Map<ProductReadDto>(product);
         }
 

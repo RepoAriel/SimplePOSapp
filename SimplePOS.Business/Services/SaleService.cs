@@ -80,7 +80,7 @@ namespace SimplePOS.Business.Services
         }
         public async Task<SaleReadDto?> GetSaleByIdAsync(int id)
         {
-            var sale = await saleRepo.GetByIdAsync(id, includProperties: "Client, SaleItem, SaleItem.Product");
+            var sale = await saleRepo.GetByIdAsync(id, includeProperties: "Client, SaleItem, SaleItem.Product");
             if (sale == null) 
                 throw new Exception("Venta no encontrada");
             return mapper.Map<SaleReadDto>(sale);
