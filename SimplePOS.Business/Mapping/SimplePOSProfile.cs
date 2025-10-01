@@ -26,7 +26,7 @@ public class SimplePOSProfile : Profile
 
         //Product mapeos
         CreateMap<Product, ProductReadDto>()
-            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null));
         CreateMap<ProductCreateDto,  Product>();
         CreateMap<ProductUpdateDto, Product>().ReverseMap();
 
