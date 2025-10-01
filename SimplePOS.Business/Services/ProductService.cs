@@ -39,9 +39,14 @@ namespace SimplePOS.Business.Services
 
         public async Task<ProductReadDto> CreateAsync(ProductCreateDto dto)
         {
-            var existing = await productRepo.FindAsync(p => p.Name.ToLower() == dto.Name.ToLower());
+            if(string.IsNullOrWhiteSpace(dto.Name))
+                throw new Exception("El nombre del producto es obligatorio");
+
+            var existing = await productRepo.FindAsync(p => p.Name != null && p.Name.ToLower() == dto.Name.ToLower());
+
             if(existing.Any())
                 throw new Exception("Ya existe un producto con ese nombre");
+
             var product = mapper.Map<Product>(dto);
             product.IsActive = true;
             await productRepo.AddAsync(product);

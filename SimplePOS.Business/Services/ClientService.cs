@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SimplePOS.Business.DTOs;
+using SimplePOS.Business.Exceptions;
 using SimplePOS.Business.Interfaces;
 using SimplePOS.Domain.Entities;
 using SimplePOS.Domain.Interfaces;
@@ -45,7 +46,7 @@ namespace SimplePOS.Business.Services
         {
             var client = await clientRepo.GetByIdAsync(id);
             if (client == null)
-                throw new Exception("Cliente no encontrado");
+                throw new NotFoundException("Cliente no encontrado");
             return mapper.Map<ClientReadDto>(client);
         }
 
@@ -53,7 +54,7 @@ namespace SimplePOS.Business.Services
         {
             var client = await clientRepo.GetByIdAsync(id);
             if(client == null)
-                throw new Exception("Cliente no encontrado");   
+                throw new NotFoundException("Cliente no encontrado");   
 
             mapper.Map(clientUpdateDto, client);
             clientRepo.Update(client);

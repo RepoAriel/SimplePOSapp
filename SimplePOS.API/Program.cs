@@ -1,4 +1,5 @@
 using AutoMapper;
+using SimplePOS.API.Middlewares;
 using SimplePOS.Business.Extensions;
 using SimplePOS.Business.Mapping;
 using SimplePOS.Infrastructure.Extensions;
@@ -33,6 +34,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+//Middleware de manejo de errores global
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

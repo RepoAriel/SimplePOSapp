@@ -9,6 +9,6 @@ namespace SimplePOS.Business.DTOs
 
         [Required(ErrorMessage = "La venta debe contener al menos un item")]
         [MinLength(1, ErrorMessage = "La venta debe contener al menos un item")]
-        public List<SaleItemCreateDto> Items { get; set; }
+        public List<SaleItemCreateDto> Items { get; set; } = new();
     }
 }

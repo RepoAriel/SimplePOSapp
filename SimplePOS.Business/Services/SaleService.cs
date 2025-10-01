@@ -60,6 +60,9 @@ namespace SimplePOS.Business.Services
             decimal total = 0;
 
             //Asignar precios y calcular total
+            if(sale.SaleItem == null || !sale.SaleItem.Any())
+                throw new Exception("La venta debe tener al menos un item");
+
             foreach (var item in sale.SaleItem)
             {
                 var product = products.First(p => p.Id == item.ProductId);
