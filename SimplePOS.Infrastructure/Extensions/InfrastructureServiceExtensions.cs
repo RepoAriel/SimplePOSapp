@@ -4,9 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SimplePOS.Domain.Interfaces;
 using SimplePOS.Infrastructure.Authentication;
 using SimplePOS.Infrastructure.Data;
 using SimplePOS.Infrastructure.Identity;
+using SimplePOS.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,9 @@ namespace SimplePOS.Infrastructure.Extensions
             //Configurar DbContext
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            //Configurar Repositori generico
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             //Configurar Identity
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
