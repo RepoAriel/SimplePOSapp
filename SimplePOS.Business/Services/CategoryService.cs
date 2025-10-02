@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SimplePOS.Business.DTOs;
+using SimplePOS.Business.Exceptions;
 using SimplePOS.Business.Interfaces;
 using SimplePOS.Domain.Entities;
 using SimplePOS.Domain.Interfaces;
@@ -25,7 +26,7 @@ namespace SimplePOS.Business.Services
         {
             var categoryExist = await categoryRepo.FindAsync(c => c.Name.ToLower() == categoryCreateDto.Name.ToLower());
             if(categoryExist.Any())
-                throw new Exception("Ya existe una categoría con ese nombre");
+                throw new AlreadyExistsException("Categoria", "nombre", categoryCreateDto.Name);
 
             var category = mapper.Map<Category>(categoryCreateDto);
             await categoryRepo.AddAsync(category);
@@ -49,7 +50,7 @@ namespace SimplePOS.Business.Services
         {
             var category = await categoryRepo.GetByIdAsync(id);
             if(category == null)
-                throw new Exception("Categoría no encontrada");
+                throw new NotFoundException("Categoría no encontrada");
             return mapper.Map<CategoryReadDto>(category);
         }
 
@@ -57,7 +58,7 @@ namespace SimplePOS.Business.Services
         {
             var category = await categoryRepo.GetByIdAsync(id);
             if(category == null)
-                throw new Exception("Categoría no encontrada");
+                throw new NotFoundException("Categoría no encontrada");
 
             mapper.Map(categoryUpdateDto, category);
             categoryRepo.Update(category);

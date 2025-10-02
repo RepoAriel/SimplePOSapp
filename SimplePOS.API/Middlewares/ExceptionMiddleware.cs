@@ -38,6 +38,10 @@ namespace SimplePOS.API.Middlewares
                     status = HttpStatusCode.NotFound;
                     message = notFound.Message;
                     break;
+                case AlreadyExistsException alreadyExists:
+                    status = HttpStatusCode.Conflict;
+                    message = alreadyExists.Message;
+                    break;
                 default:
                     status = HttpStatusCode.InternalServerError;
                     message = "Ocurrió un error inesperado.";

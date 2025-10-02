@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SimplePOS.Business.DTOs;
+using SimplePOS.Business.Exceptions;
 using SimplePOS.Business.Interfaces;
 using SimplePOS.Domain.Entities;
 using SimplePOS.Domain.Interfaces;
@@ -32,7 +33,7 @@ namespace SimplePOS.Business.Services
         {
             var product = await productRepo.GetByIdAsync(id, includeProperties: "Category");
             if (product == null)
-                throw new Exception("Producto no encontrado");
+                throw new NotFoundException("Producto no encontrado");
 
             return mapper.Map<ProductReadDto>(product);
         }
@@ -45,7 +46,7 @@ namespace SimplePOS.Business.Services
             var existing = await productRepo.FindAsync(p => p.Name != null && p.Name.ToLower() == dto.Name.ToLower());
 
             if(existing.Any())
-                throw new Exception("Ya existe un producto con ese nombre");
+                throw new AlreadyExistsException("Producto", "nombre", dto.Name);
 
             var product = mapper.Map<Product>(dto);
             product.IsActive = true;
@@ -58,7 +59,7 @@ namespace SimplePOS.Business.Services
         {
             var product = await productRepo.GetByIdAsync(id);
             if (product == null)
-                throw new Exception("Producto no encontrado");
+                throw new NotFoundException("Producto no encontrado");
 
             mapper.Map(dto, product); // actualiza propiedades
             productRepo.Update(product);
@@ -69,7 +70,7 @@ namespace SimplePOS.Business.Services
         {
             var product = await productRepo.GetByIdAsync(id);
             if (product == null)
-                throw new Exception("Producto no encontrado");
+                throw new NotFoundException("Producto no encontrado");
 
             await productRepo.DeleteAsync(product.Id);
         }
