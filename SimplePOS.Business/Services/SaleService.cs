@@ -1,33 +1,38 @@
 ﻿using AutoMapper;
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Interfaces;
+using SimplePOS.Domain;
 using SimplePOS.Domain.Entities;
 using SimplePOS.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SimplePOS.Business.Services
 {
-    internal class SaleService : ISaleService
+    public class SaleService : ISaleService
     {
         private readonly IGenericRepository<Sale> saleRepo;
         private readonly IGenericRepository<Product> productRepo;
         private readonly IGenericRepository<Client> clientRepo;
         private readonly IMapper mapper;
+        private readonly IPaginationService paginationService;
 
         public SaleService(
             IGenericRepository<Sale> saleRepo,
             IGenericRepository<Product> productRepo,
             IGenericRepository<Client> clientRepo,
-            IMapper mapper)
+            IMapper mapper,
+            IPaginationService paginationService)
         {
             this.saleRepo = saleRepo;
             this.productRepo = productRepo;
             this.clientRepo = clientRepo;
             this.mapper = mapper;
+            this.paginationService = paginationService;
         }
         public async Task<SaleReadDto> RegisterSaleAsync(SaleCreateDto saleCreateDto)
         {
@@ -93,6 +98,27 @@ namespace SimplePOS.Business.Services
         {
             var sales = await saleRepo.GetAllAsync(includeProperties: "Client, SaleItem, SaleItem.Product");
             return mapper.Map<List<SaleReadDto>>(sales);
+        }
+
+        //PAGINACION
+        public async Task<PagedResult<SaleReadDto>> GetPagedSalesAsync(
+            PaginationParams paginationParams,
+            string searchTerm)
+        {
+            Expression<Func<Sale, bool>>? filter = null;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var lowerTerm = searchTerm.ToLower();
+                filter = s =>
+                    (s.Client != null && s.Client.Name != null && s.Client.Name.ToLower().Contains(lowerTerm)) ||
+                    (s.Client != null && s.Client.Email != null && s.Client.Email.ToLower().Contains(lowerTerm)) ||
+                    (s.Client != null && s.Client.PhoneNumber != null && s.Client.PhoneNumber.ToLower().Contains(lowerTerm));
+            }
+            return await paginationService.GetPagedAsync<Sale, SaleReadDto>(
+                paginationParams,
+                saleRepo,
+                filter,
+                includeProperties: "Client, SaleItem, SaleItem.Product");
         }
     }
 }

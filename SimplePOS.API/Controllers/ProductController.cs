@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Interfaces;
+using SimplePOS.Business.Services;
+using SimplePOS.Domain;
 
 namespace SimplePOS.API.Controllers
 {
@@ -14,6 +16,15 @@ namespace SimplePOS.API.Controllers
         public ProductController(IProductService productService)
         {
             this.productService = productService;
+        }
+        //GET: api/Product/paged?page=1&pageSize=10
+        [HttpGet("paged")]
+        public async Task<ActionResult<PagedResult<ProductReadDto>>> GetProducts(
+            [FromQuery] PaginationParams paginationParams,
+            [FromQuery] string searchTerm)
+        {
+            var result = await productService.GetPagedProductsAsync(paginationParams, searchTerm);
+            return Ok(result);
         }
 
         //GET: api/Product

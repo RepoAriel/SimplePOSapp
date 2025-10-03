@@ -79,6 +79,35 @@ namespace SimplePOS.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         }
 
+        public async Task<(List<T> Items, int TotalItems)> GetPagedAsync(
+            int page, 
+            int pageSize, 
+            Expression<Func<T, bool>>? filter = null,
+            string? includeProperties = null)
+        {
+            var query = context.Set<T>().AsQueryable();
+
+            if(filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (!string.IsNullOrWhiteSpace(includeProperties))
+            {
+                foreach (var includeProperty in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty.Trim());
+                }
+            }
+
+            //Obtener el total de elementos antes de aplicar paginación
+            var totalItems = await query.CountAsync();
+
+            //Obtener los elementos paginados
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return (items, totalItems);
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return await context.SaveChangesAsync() > 0;

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Interfaces;
+using SimplePOS.Domain;
 
 namespace SimplePOS.API.Controllers
 {
@@ -15,6 +16,16 @@ namespace SimplePOS.API.Controllers
         public ClientController(IClientService clientService)
         {
             this.clientService = clientService;
+        }
+
+        //GET: api/Client/paged?page=1&pageSize=10
+        [HttpGet("paged")]
+        public async Task<ActionResult<PagedResult<ClientReadDto>>> GetPagedClients(
+            [FromQuery] PaginationParams paginationParams,
+            [FromQuery] string searchTerm)
+        {
+            var result = await clientService.GetPagedClientsAsync(paginationParams, searchTerm);
+            return Ok(result);
         }
 
         //GET: api/Client

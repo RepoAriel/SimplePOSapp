@@ -2,11 +2,13 @@
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Exceptions;
 using SimplePOS.Business.Interfaces;
+using SimplePOS.Domain;
 using SimplePOS.Domain.Entities;
 using SimplePOS.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,11 +18,34 @@ namespace SimplePOS.Business.Services
     {
         private readonly IGenericRepository<Client> clientRepo;
         private readonly IMapper mapper;
+        private readonly IPaginationService paginationService;
 
-        public ClientService(IGenericRepository<Client> clientRepo, IMapper mapper)
+        public ClientService(
+            IGenericRepository<Client> clientRepo, 
+            IMapper mapper,
+            IPaginationService paginationService)
         {
             this.clientRepo = clientRepo;
             this.mapper = mapper;
+            this.paginationService = paginationService;
+        }
+        public async Task<PagedResult<ClientReadDto>> GetPagedClientsAsync(
+            PaginationParams paginationParams,
+            string searchTerm)
+        {
+            Expression<Func<Client, bool>>? filter = null;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var lowerTerm = searchTerm.ToLower();
+                filter = c => 
+                    (c.Name != null && c.Name.ToLower().Contains(lowerTerm)) ||
+                    (c.Email != null && c.Email.ToLower().Contains(lowerTerm)) ||
+                    (c.PhoneNumber != null && c.PhoneNumber.ToLower().Contains(lowerTerm)); 
+            }
+            return await paginationService.GetPagedAsync<Client, ClientReadDto>(
+                paginationParams,
+                clientRepo,
+                filter);
         }
         public async Task<ClientReadDto> CreateAsync(ClientCreateDto clientCreateDto)
         {

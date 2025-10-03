@@ -2,11 +2,13 @@
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Exceptions;
 using SimplePOS.Business.Interfaces;
+using SimplePOS.Domain;
 using SimplePOS.Domain.Entities;
 using SimplePOS.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,12 +18,29 @@ namespace SimplePOS.Business.Services
     {
         private readonly IGenericRepository<Product> productRepo;
         private readonly IMapper mapper;
+        private readonly PaginationService paginationService;
 
-        public ProductService(IGenericRepository<Product> productRepo, IMapper mapper)
+        public ProductService(IGenericRepository<Product> productRepo, IMapper mapper, PaginationService paginationService)
         {
             this.productRepo = productRepo;
             this.mapper = mapper;
+            this.paginationService = paginationService;
+        }
 
+        public async Task<PagedResult<ProductReadDto>> GetPagedProductsAsync(
+            PaginationParams paginationParams,
+            string searchTerm)
+        {
+            Expression<Func<Product, bool>>? filter = null;
+            if(!string.IsNullOrWhiteSpace(searchTerm))
+            {   
+                var lowerTerm = searchTerm.ToLower();
+                filter = p => p.Name != null && p.Name.ToLower().Contains(lowerTerm);
+            }
+            return await paginationService.GetPagedAsync<Product, ProductReadDto>(
+                paginationParams, 
+                productRepo,
+                filter);
         }
         public async Task<List<ProductReadDto>> GetAllAsync()
         {
@@ -74,6 +93,5 @@ namespace SimplePOS.Business.Services
 
             await productRepo.DeleteAsync(product.Id);
         }
-
     }
 }
