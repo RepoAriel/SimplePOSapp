@@ -19,6 +19,7 @@ namespace SimplePOS.Business.Extensions
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ISaleService, SaleService>();
             services.AddScoped<IPaginationService, PaginationService>();
+            services.AddScoped<IAuthService, AuthService>();
             return services;
         }
     }

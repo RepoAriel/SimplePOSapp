@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SimplePOS.Business\SimplePOS.Business.csproj" />
     <ProjectReference Include="..\SimplePOS.Domain\SimplePOS.Domain.csproj" />
   </ItemGroup>
 

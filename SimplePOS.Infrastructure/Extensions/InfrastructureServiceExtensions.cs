@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SimplePOS.Business.Interfaces;
 using SimplePOS.Domain.Interfaces;
 using SimplePOS.Infrastructure.Authentication;
 using SimplePOS.Infrastructure.Data;
@@ -87,7 +88,11 @@ namespace SimplePOS.Infrastructure.Extensions
             //Agregar clase generadora de Tokens
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+            //IAuthRepository a AuthRepository
+            services.AddScoped<IAuthRepository, AuthRepository>();
+
             return services;
+
         }
     }
 }
