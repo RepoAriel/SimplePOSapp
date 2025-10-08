@@ -36,6 +36,9 @@ namespace SimplePOS.Business.Services
 
         public async Task DeleteAsync(int id)
         {
+            var category = await categoryRepo.GetByIdAsync(id);
+            if(category == null)
+                throw new NotFoundException("Categoría no encontrada");
             await categoryRepo.DeleteAsync(id);
             await categoryRepo.SaveChangesAsync();
         }

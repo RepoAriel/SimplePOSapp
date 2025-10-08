@@ -42,14 +42,17 @@ namespace SimplePOS.Business.Services
                     (c.Email != null && c.Email.ToLower().Contains(lowerTerm)) ||
                     (c.PhoneNumber != null && c.PhoneNumber.ToLower().Contains(lowerTerm)); 
             }
+            string includes = "";
             return await paginationService.GetPagedAsync<Client, ClientReadDto>(
                 paginationParams,
                 clientRepo,
-                filter);
+                filter,
+                includeProperties: includes);
         }
-        public async Task<ClientReadDto> CreateAsync(ClientCreateDto clientCreateDto)
+        public async Task<ClientReadDto> CreateAsync(ClientCreateDto clientCreateDto, string? photoUrl)
         {
             var client = mapper.Map<Client>(clientCreateDto);
+            client.PhotoURL = photoUrl;
             await clientRepo.AddAsync(client);
             await clientRepo.SaveChangesAsync();
             return mapper.Map<ClientReadDto>(client);
@@ -57,6 +60,9 @@ namespace SimplePOS.Business.Services
 
         public async Task DeleteAsync(int id)
         {
+            var client = await clientRepo.GetByIdAsync(id);
+            if (client == null)
+                throw new NotFoundException("Cliente no encontrado");
             await clientRepo.DeleteAsync(id);
             await clientRepo.SaveChangesAsync();
         }

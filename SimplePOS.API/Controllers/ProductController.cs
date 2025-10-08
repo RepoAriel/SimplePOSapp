@@ -12,16 +12,18 @@ namespace SimplePOS.API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService productService;
+        private readonly IWebHostEnvironment env;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IWebHostEnvironment env)
         {
             this.productService = productService;
+            this.env = env;
         }
         //GET: api/Product/paged?page=1&pageSize=10
         [HttpGet("paged")]
         public async Task<ActionResult<PagedResult<ProductReadDto>>> GetProducts(
             [FromQuery] PaginationParams paginationParams,
-            [FromQuery] string searchTerm)
+            [FromQuery] string searchTerm = "")
         {
             var result = await productService.GetPagedProductsAsync(paginationParams, searchTerm);
             return Ok(result);
@@ -36,8 +38,8 @@ namespace SimplePOS.API.Controllers
         }
 
         //GET: api/Product/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProductReadDto>> GetByIdAsync(int id)
+        [HttpGet("{id}", Name = "GetProductById")]
+        public async Task<ActionResult<ProductReadDto>> GetById(int id)
         {
             var product = await productService.GetByIdAsync(id);
             return Ok(product);
@@ -45,10 +47,29 @@ namespace SimplePOS.API.Controllers
 
         //POST: api/Product
         [HttpPost]
-        public async Task<ActionResult<ProductReadDto>> CreateAsync(ProductCreateDto productCreateDto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<ProductReadDto>> CreateAsync([FromForm]ProductCreateDto productCreateDto)
         {
-            var product = await productService.CreateAsync(productCreateDto);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = product.Id }, product);
+            string photoUrl = null;
+            //Guardar foto si existe
+            if (productCreateDto.PhotoFile != null)
+            {
+                //Generar nombre de archivo unico
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(productCreateDto.PhotoFile.FileName);
+                //Definir ruta de guardado (wwwroot/images/products)
+                var uploadsFolder = Path.Combine(env.WebRootPath, "images", "products");
+                Directory.CreateDirectory(uploadsFolder);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                //Guardar archivo
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await productCreateDto.PhotoFile.CopyToAsync(fileStream);
+                }
+                //Crear URL accesible publicamente
+                photoUrl = $"/images/products/{uniqueFileName}";
+            }
+            var product = await productService.CreateAsync(productCreateDto, photoUrl);
+            return CreatedAtRoute("GetProductById", new { id = product.Id }, product);
         }
 
         //PUT: api/Product/5

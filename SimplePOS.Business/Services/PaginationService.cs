@@ -31,7 +31,8 @@ namespace SimplePOS.Business.Services
             var (items, totalItems) = await repository.GetPagedAsync(
                 paginationParams.Page, 
                 paginationParams.PageSize,
-                filter);
+                filter,
+                includeProperties);
 
             var itemDtos = mapper.Map<List<TDto>>(items);
 

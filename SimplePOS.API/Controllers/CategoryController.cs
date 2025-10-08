@@ -25,8 +25,8 @@ namespace SimplePOS.API.Controllers
         }
 
         //GET: api/Category/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryReadDto>> GetByIdAsync(int id)
+        [HttpGet("{id}", Name = "GetCategoryById")]
+        public async Task<ActionResult<CategoryReadDto>> GetById(int id)
         {
             var category = await categoryService.GetByIdAsync(id);
             return Ok(category);
@@ -37,7 +37,7 @@ namespace SimplePOS.API.Controllers
         public async Task<ActionResult<CategoryReadDto>> CreateAsync(CategoryCreateDto categoryCreateDto)
         {
             var category = await categoryService.CreateAsync(categoryCreateDto);
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = category.Id }, category);
+            return CreatedAtRoute("GetCategoryById", new { id = category.Id }, category);
         }
 
         //PUT: api/Category/5

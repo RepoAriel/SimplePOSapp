@@ -40,4 +40,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
+//Habilita el servicio de archivos estáticos (necesario para wwwroot)
+app.UseStaticFiles();
+
 app.Run();

@@ -15,7 +15,7 @@ namespace SimplePOS.Business.Interfaces
             string searchTerm);
         Task<List<ClientReadDto>> GetAllAsync();
         Task<ClientReadDto> GetByIdAsync(int id);
-        Task<ClientReadDto> CreateAsync(ClientCreateDto clientCreateDto);
+        Task<ClientReadDto> CreateAsync(ClientCreateDto clientCreateDto, string? PhotoUrl);
         Task UpdateAsync(int id, ClientUpdateDto clientUpdateDto);
         Task DeleteAsync(int id);
     }

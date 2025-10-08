@@ -13,7 +13,7 @@ namespace SimplePOS.Business.Interfaces
         Task<PagedResult<ProductReadDto>> GetPagedProductsAsync(PaginationParams paginationParams, string searchTerm);
         Task<List<ProductReadDto>> GetAllAsync();
         Task<ProductReadDto> GetByIdAsync(int id);
-        Task<ProductReadDto> CreateAsync(ProductCreateDto productCreateDto);
+        Task<ProductReadDto> CreateAsync(ProductCreateDto productCreateDto, string? photoUrl);
         Task UpdateAsync(int id, ProductUpdateDto productUpdateDto);
         Task DeleteAsync(int id);
     }

@@ -24,4 +24,9 @@
     <ProjectReference Include="..\SimplePOS.Infrastructure\SimplePOS.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\Clients\" />
+    <Folder Include="wwwroot\images\Products\" />
+  </ItemGroup>
+
 </Project>

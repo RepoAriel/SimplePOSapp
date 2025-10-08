@@ -18,9 +18,9 @@ namespace SimplePOS.Business.Services
     {
         private readonly IGenericRepository<Product> productRepo;
         private readonly IMapper mapper;
-        private readonly PaginationService paginationService;
+        private readonly IPaginationService paginationService;
 
-        public ProductService(IGenericRepository<Product> productRepo, IMapper mapper, PaginationService paginationService)
+        public ProductService(IGenericRepository<Product> productRepo, IMapper mapper, IPaginationService paginationService)
         {
             this.productRepo = productRepo;
             this.mapper = mapper;
@@ -57,7 +57,7 @@ namespace SimplePOS.Business.Services
             return mapper.Map<ProductReadDto>(product);
         }
 
-        public async Task<ProductReadDto> CreateAsync(ProductCreateDto dto)
+        public async Task<ProductReadDto> CreateAsync(ProductCreateDto dto, string? photoUrl)
         {
             if(string.IsNullOrWhiteSpace(dto.Name))
                 throw new Exception("El nombre del producto es obligatorio");
@@ -69,6 +69,7 @@ namespace SimplePOS.Business.Services
 
             var product = mapper.Map<Product>(dto);
             product.IsActive = true;
+            product.PhotoURL = photoUrl;
             await productRepo.AddAsync(product);
             await productRepo.SaveChangesAsync();
             return mapper.Map<ProductReadDto>(product);

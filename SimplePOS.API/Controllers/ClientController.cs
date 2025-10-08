@@ -12,17 +12,19 @@ namespace SimplePOS.API.Controllers
     public class ClientController : ControllerBase
     {
         private readonly IClientService clientService;
+        private readonly IWebHostEnvironment env;
 
-        public ClientController(IClientService clientService)
+        public ClientController(IClientService clientService, IWebHostEnvironment env)
         {
             this.clientService = clientService;
+            this.env = env;
         }
 
         //GET: api/Client/paged?page=1&pageSize=10
         [HttpGet("paged")]
         public async Task<ActionResult<PagedResult<ClientReadDto>>> GetPagedClients(
             [FromQuery] PaginationParams paginationParams,
-            [FromQuery] string searchTerm)
+            [FromQuery] string searchTerm = "")
         {
             var result = await clientService.GetPagedClientsAsync(paginationParams, searchTerm);
             return Ok(result);
@@ -37,7 +39,7 @@ namespace SimplePOS.API.Controllers
         }
 
         //GET: api/Client/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetClientById")]
         public async Task<ActionResult<ClientReadDto>> GetById(int id)
         {
             var client = await clientService.GetByIdAsync(id);
@@ -48,10 +50,35 @@ namespace SimplePOS.API.Controllers
 
         //POST: api/Client
         [HttpPost]
-        public async Task<ActionResult<ClientReadDto>> Create(ClientCreateDto clientCreateDto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<ClientReadDto>> Create([FromForm]ClientCreateDto clientCreateDto)
         {
-            var client = await clientService.CreateAsync(clientCreateDto);
-            return CreatedAtAction(nameof(GetById), new { id = client.Id }, client);
+            string photoUrl = null;
+
+            //Guardar foto si existe
+            if(clientCreateDto.PhotoFile != null)
+            {
+                //Generando nombre de archivo unico
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(clientCreateDto.PhotoFile.FileName);
+                
+                //Definir ruta de guardado (wwwroot/images/clients)
+                var uploadsFolder = Path.Combine(env.WebRootPath, "images", "clients");
+                Directory.CreateDirectory(uploadsFolder);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                //Guardar archivo
+                using(var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await clientCreateDto.PhotoFile.CopyToAsync(fileStream);
+                }
+
+                //Crear URL accesible publicamente
+                photoUrl = $"/images/clients/{uniqueFileName}";
+            }
+
+            //Pasar DTO y URL Generada al servicio ClientService
+            var client = await clientService.CreateAsync(clientCreateDto, photoUrl);
+            return CreatedAtRoute("GetClientById", new { id = client.Id }, client);
         }
 
         //PUT: api/Client/5

@@ -11,7 +11,6 @@ namespace SimplePOS.API.Controllers
     public class SaleController : ControllerBase
     {
         private readonly ISaleService saleService;
-
         public SaleController(ISaleService saleService)
         {
             this.saleService = saleService;
@@ -36,7 +35,7 @@ namespace SimplePOS.API.Controllers
         }
 
         //GET: api/Sale/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetSaleById")]
         public async Task<ActionResult<SaleReadDto>> GetById(int id)
         {
             var sale = await saleService.GetSaleByIdAsync(id);
@@ -48,7 +47,7 @@ namespace SimplePOS.API.Controllers
         public async Task<ActionResult<SaleReadDto>> Create(SaleCreateDto saleCreateDto)
         {
             var sale = await saleService.RegisterSaleAsync(saleCreateDto);
-            return CreatedAtAction(nameof(GetById), new { id = sale.Id }, sale);
+            return CreatedAtRoute("GetSaleById", new { id = sale.Id }, sale);
         }
     }
 }

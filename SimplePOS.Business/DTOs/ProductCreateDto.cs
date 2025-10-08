@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace SimplePOS.Business.DTOs
@@ -7,6 +8,7 @@ namespace SimplePOS.Business.DTOs
         [Required]
         public string? Name { get; set; }
         public string? Description { get; set; }
+        public IFormFile? PhotoFile { get; set; }   
         public decimal Price { get; set; }
         public int Stock { get; set; }
         public bool IsActive { get; set; }
