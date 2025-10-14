@@ -37,10 +37,10 @@ namespace SimplePOS.Infrastructure.Repositories
             if (!result.Succeeded)
                 throw new Exception("Credenciales invalidas");
 
-            return jwtTokenGenerator.GenerateToken(user);
+            return await jwtTokenGenerator.GenerateToken(user);
         }
-
-        public async Task<string> RegisterAsync(string email, string password, string fullName)
+        
+        public async Task<string> RegisterAsync(string email, string password, string fullName, string role = "Empleado")
         {
             var user = new ApplicationUser
             {
@@ -60,7 +60,11 @@ namespace SimplePOS.Infrastructure.Repositories
                 throw new Exception(errors);
             }
 
-            return jwtTokenGenerator.GenerateToken(user);
+            await userManager.AddToRoleAsync(user, role);
+
+
+
+            return await jwtTokenGenerator.GenerateToken(user);
 
         }
 

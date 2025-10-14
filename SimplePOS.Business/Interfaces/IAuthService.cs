@@ -9,7 +9,7 @@ namespace SimplePOS.Business.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthResponse> RegisterAsync(UserRegisterRequest request);
+        Task<AuthResponse> RegisterAsync(UserRegisterRequest request, string role = "Empleado");
         Task<AuthResponse> LoginAsync(UserLoginRequest request);
     }
 }

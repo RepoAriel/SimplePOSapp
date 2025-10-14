@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SimplePOS.Infrastructure.Identity;
 using System;
@@ -13,17 +14,19 @@ namespace SimplePOS.Infrastructure.Authentication
 {
     public interface IJwtTokenGenerator
     {
-        string GenerateToken(ApplicationUser user); 
+        Task<string> GenerateToken(ApplicationUser user); 
     }
     public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly JwtSettings settings;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public JwtTokenGenerator(IOptions<JwtSettings> options)
+        public JwtTokenGenerator(IOptions<JwtSettings> options, UserManager<ApplicationUser> userManager)
         {
             this.settings = options.Value;
+            this.userManager = userManager;
         }
-        public string GenerateToken(ApplicationUser user)
+        public async Task<string> GenerateToken(ApplicationUser user)
         {
             if (string.IsNullOrWhiteSpace(settings.Key))
                 throw new ArgumentException("JWT key no esta configurado de manera correcta");
@@ -34,8 +37,15 @@ namespace SimplePOS.Infrastructure.Authentication
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-                new Claim("uid", user.Id)
+                new Claim("uid", user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
+
+            var roles = await userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var token = new JwtSecurityToken(
                     issuer: settings.Issuer,

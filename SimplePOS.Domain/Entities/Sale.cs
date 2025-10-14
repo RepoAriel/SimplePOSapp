@@ -14,7 +14,6 @@ namespace SimplePOS.Domain.Entities
         public decimal Total { get; set; }
         public int ClientId { get; set; }
         public Client? Client { get; set; }
-        public string? UserId { get; set; }
         public ICollection<SaleItem>? SaleItem { get; set; }
     }
 }

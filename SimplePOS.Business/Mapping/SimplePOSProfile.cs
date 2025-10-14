@@ -36,6 +36,5 @@ public class SimplePOSProfile : Profile
             .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => src.Client != null ? src.Client.Name : null));
         CreateMap<SaleCreateDto, Sale>()
             .ForMember(dest => dest.SaleItem, opt => opt.MapFrom(src => src.Items));
-        CreateMap<SaleUpdateDto, Sale>().ReverseMap();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Interfaces;
@@ -48,6 +49,7 @@ namespace SimplePOS.API.Controllers
         //POST: api/Product
         [HttpPost]
         [Consumes("multipart/form-data")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductReadDto>> CreateAsync([FromForm]ProductCreateDto productCreateDto)
         {
             string photoUrl = null;
@@ -74,6 +76,7 @@ namespace SimplePOS.API.Controllers
 
         //PUT: api/Product/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAsync(int id, ProductUpdateDto productUpdateDto)
         {
             await productService.UpdateAsync(id, productUpdateDto);
@@ -82,6 +85,7 @@ namespace SimplePOS.API.Controllers
 
         //DELETE: api/Product/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await productService.DeleteAsync(id);

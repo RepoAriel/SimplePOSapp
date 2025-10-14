@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using SimplePOS.Business.DTOs;
@@ -22,6 +23,7 @@ namespace SimplePOS.API.Controllers
 
         //GET: api/Client/paged?page=1&pageSize=10
         [HttpGet("paged")]
+        [Authorize(Roles = "Admin,Empleado")]
         public async Task<ActionResult<PagedResult<ClientReadDto>>> GetPagedClients(
             [FromQuery] PaginationParams paginationParams,
             [FromQuery] string searchTerm = "")
@@ -32,6 +34,7 @@ namespace SimplePOS.API.Controllers
 
         //GET: api/Client
         [HttpGet]
+        [Authorize(Roles = "Admin,Empleado")]
         public async Task<ActionResult<List<ClientReadDto>>> GetAll()
         {
             var clients = await clientService.GetAllAsync();
@@ -40,6 +43,7 @@ namespace SimplePOS.API.Controllers
 
         //GET: api/Client/5
         [HttpGet("{id}", Name = "GetClientById")]
+        [Authorize(Roles = "Admin,Empleado")]
         public async Task<ActionResult<ClientReadDto>> GetById(int id)
         {
             var client = await clientService.GetByIdAsync(id);
@@ -51,6 +55,7 @@ namespace SimplePOS.API.Controllers
         //POST: api/Client
         [HttpPost]
         [Consumes("multipart/form-data")]
+        [Authorize(Roles = "Admin, Empleado")]
         public async Task<ActionResult<ClientReadDto>> Create([FromForm]ClientCreateDto clientCreateDto)
         {
             string photoUrl = null;
@@ -83,6 +88,7 @@ namespace SimplePOS.API.Controllers
 
         //PUT: api/Client/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Empleado")]
         public async Task<IActionResult> Update(int id, ClientUpdateDto clientUpdateDto)
         {
             await clientService.UpdateAsync(id, clientUpdateDto);
@@ -91,6 +97,7 @@ namespace SimplePOS.API.Controllers
 
         //DELETE: api/Client/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await clientService.DeleteAsync(id);

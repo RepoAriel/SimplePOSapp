@@ -16,5 +16,6 @@ namespace SimplePOS.Business.Interfaces
         Task<SaleReadDto> RegisterSaleAsync(SaleCreateDto saleCreateDto);
         Task<List<SaleReadDto>> GetSalesAsync();
         Task<SaleReadDto?> GetSaleByIdAsync(int id);
+        byte[] GenerarFactura(SaleReadDto sale);
     }
 }

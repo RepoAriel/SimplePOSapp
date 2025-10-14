@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Interfaces;
@@ -21,6 +22,14 @@ namespace SimplePOS.API.Controllers
         {
             var result = await authService.RegisterAsync(request);
             return Ok(result);
+        }
+
+        [HttpPost("register-admin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] UserRegisterRequest request)
+        {
+            var response = await authService.RegisterAsync(request, role: "Admin");
+            return Ok(response);
         }
 
         [HttpPost("login")]

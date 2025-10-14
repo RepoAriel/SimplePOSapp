@@ -8,8 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using System.ComponentModel;
+using Document = QuestPDF.Fluent.Document;
+using Microsoft.AspNetCore.Http;
 
 namespace SimplePOS.Business.Services
 {
@@ -20,19 +28,22 @@ namespace SimplePOS.Business.Services
         private readonly IGenericRepository<Client> clientRepo;
         private readonly IMapper mapper;
         private readonly IPaginationService paginationService;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         public SaleService(
             IGenericRepository<Sale> saleRepo,
             IGenericRepository<Product> productRepo,
             IGenericRepository<Client> clientRepo,
             IMapper mapper,
-            IPaginationService paginationService)
+            IPaginationService paginationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.saleRepo = saleRepo;
             this.productRepo = productRepo;
             this.clientRepo = clientRepo;
             this.mapper = mapper;
             this.paginationService = paginationService;
+            this.httpContextAccessor = httpContextAccessor;
         }
         public async Task<SaleReadDto> RegisterSaleAsync(SaleCreateDto saleCreateDto)
         {
@@ -84,6 +95,7 @@ namespace SimplePOS.Business.Services
             sale.Total = total;
 
             await saleRepo.AddAsync(sale);
+            await saleRepo.SaveChangesAsync();
             return mapper.Map<SaleReadDto>(sale);
         }
         public async Task<SaleReadDto?> GetSaleByIdAsync(int id)
@@ -120,5 +132,83 @@ namespace SimplePOS.Business.Services
                 filter,
                 includeProperties: "Client, SaleItem, SaleItem.Product");
         }
+
+        public byte[] GenerarFactura(SaleReadDto sale)
+        {
+            static QuestPDF.Infrastructure.IContainer CellStyle(QuestPDF.Infrastructure.IContainer container)
+            {
+                return container
+                    .PaddingVertical(5)
+                    .BorderBottom(1)
+                    .BorderColor(Colors.Grey.Lighten2);
+            }
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(50);
+                    page.Size(PageSizes.A4);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(12).FontColor(Colors.Black));
+
+                    page.Header()
+                        .Text($"Factura #{sale.Id}")
+                        .SemiBold().FontSize(20).FontColor(Colors.Blue.Medium);
+
+                    page.Content()
+                        .Column(column =>
+                        {
+                            column.Item().Text($"Cliente: {sale.ClientName ?? "Sin cliente"}");
+                            // Corrección formato fecha (dd/MM/yyyy)
+                            column.Item().Text($"Fecha: {sale.Date.ToLocalTime():dd/MM/yyyy HH:mm}");
+
+                            column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+
+                            // Tabla de items
+                            column.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(CellStyle).Text("Producto");
+                                    header.Cell().Element(CellStyle).Text("Cantidad");
+                                    header.Cell().Element(CellStyle).Text("Precio unit.");
+                                    header.Cell().Element(CellStyle).Text("Total.");
+                                });
+
+                                foreach (var item in sale.Items ?? new List<SaleItemReadDto>())
+                                {
+                                    table.Cell().Element(CellStyle).Text(item.ProductName ?? "Desconocido");
+                                    table.Cell().Element(CellStyle).Text(item.Quantity.ToString());
+                                    table.Cell().Element(CellStyle).Text($"{item.UnitPrice:C}");
+                                    table.Cell().Element(CellStyle).Text($"{(item.UnitPrice * item.Quantity):C}");
+                                }
+
+                                table.Cell().ColumnSpan(3).Element(CellStyle).AlignRight().Text("TOTAL:");
+                                table.Cell().Element(CellStyle).Text($"{sale.Total:C}");
+                            });
+                        });
+
+                    page.Footer()
+                        .AlignCenter()
+                        .Text(text =>
+                        {
+                            text.Span("Gracias por su compra!").SemiBold();
+                            text.Line("\nSimplePOS - 2025");
+                        });
+                });
+            });
+
+            return document.GeneratePdf();
+        }
+
     }
 }

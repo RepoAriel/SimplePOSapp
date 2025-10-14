@@ -124,10 +124,6 @@ namespace SimplePOS.Infrastructure.Data
                 entity.Property(s => s.Total)
                     .IsRequired()
                     .HasColumnType("decimal(18,2)");
-
-                entity.Property(s => s.UserId)
-                    .HasMaxLength(450)   
-                    .HasColumnType("varchar(450)");
             });
 
             // SaleItem

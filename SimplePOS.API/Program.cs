@@ -6,6 +6,9 @@ using SimplePOS.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//QuestPDF licencia
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
 //Registro de AutoMapper
 builder.Services.AddAutoMapper(mc => {mc.AddProfile(new SimplePOSProfile());});
 

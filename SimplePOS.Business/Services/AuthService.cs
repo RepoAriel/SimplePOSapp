@@ -27,14 +27,16 @@ namespace SimplePOS.Business.Services
             };
         }
 
-        public async Task<AuthResponse> RegisterAsync(UserRegisterRequest request)
+        public async Task<AuthResponse> RegisterAsync(UserRegisterRequest request, string role = "Empleado")
         {
-            var token = await authRepo.RegisterAsync(request.Email, request.Password, request.FullName);
+            var token = await authRepo.RegisterAsync(request.Email, request.Password, request.FullName, role);
             return new AuthResponse
             {
                 Email = request.Email,
                 Token = token
             };
+
+            
         }
     }
 }

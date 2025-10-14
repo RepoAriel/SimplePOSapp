@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimplePOS.Business.DTOs;
 using SimplePOS.Business.Interfaces;
@@ -18,6 +19,7 @@ namespace SimplePOS.API.Controllers
 
         //GET: api/Category
         [HttpGet]
+        [Authorize(Roles ="Admin,Empleado")]
         public async Task<ActionResult<List<CategoryReadDto>>> GetAllAsync()
         {
             var categories = await categoryService.GetAllAsync();
@@ -26,6 +28,7 @@ namespace SimplePOS.API.Controllers
 
         //GET: api/Category/5
         [HttpGet("{id}", Name = "GetCategoryById")]
+        [Authorize(Roles = "Admin,Empleado")]
         public async Task<ActionResult<CategoryReadDto>> GetById(int id)
         {
             var category = await categoryService.GetByIdAsync(id);
@@ -34,6 +37,7 @@ namespace SimplePOS.API.Controllers
 
         //POST: api/Category
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CategoryReadDto>> CreateAsync(CategoryCreateDto categoryCreateDto)
         {
             var category = await categoryService.CreateAsync(categoryCreateDto);
@@ -41,6 +45,7 @@ namespace SimplePOS.API.Controllers
         }
 
         //PUT: api/Category/5
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, CategoryUpdateDto categoryUpdateDto)
         {
@@ -50,6 +55,7 @@ namespace SimplePOS.API.Controllers
 
         //DELETE: api/Category/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await categoryService.DeleteAsync(id);
