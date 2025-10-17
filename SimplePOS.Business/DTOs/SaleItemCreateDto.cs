@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa un artículo de venta con detalles para la creación de una venta.
+    /// </summary>
     public class SaleItemCreateDto
     {
         [Required(ErrorMessage = "El ID del producto es obligatorio.")]

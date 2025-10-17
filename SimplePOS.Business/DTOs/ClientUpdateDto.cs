@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa los datos necesarios para actualizar un cliente existente.
+    /// </summary>
     public class ClientUpdateDto
     {
         [Required(ErrorMessage = "El ID del cliente es obligatorio.")]

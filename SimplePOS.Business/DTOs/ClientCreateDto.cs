@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa los datos necesarios para crear un nuevo cliente.
+    /// </summary>
     public class ClientCreateDto
     {
         [Required(ErrorMessage = "El nombre es obligatorio.")]

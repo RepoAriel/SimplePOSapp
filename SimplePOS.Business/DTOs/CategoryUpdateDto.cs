@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa los datos necesarios para actualizar una categoría.
+    /// </summary>
     public class CategoryUpdateDto
     {
         [Required]

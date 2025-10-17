@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa una solicitud de inicio de sesión de usuario.
+    /// </summary>
     public class UserLoginRequest
     {
         public string Email { get; set; } = string.Empty;

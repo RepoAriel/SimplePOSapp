@@ -1,5 +1,8 @@
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa un artículo de venta con detalles como ID, producto, cantidad y precio unitario.
+    /// </summary>
     public class SaleItemReadDto
     {
         public int Id { get; set; }

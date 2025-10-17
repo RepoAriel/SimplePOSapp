@@ -40,7 +40,8 @@ namespace SimplePOS.Business.Services
             return await paginationService.GetPagedAsync<Product, ProductReadDto>(
                 paginationParams, 
                 productRepo,
-                filter);
+                filter,
+                includeProperties: "Category");
         }
         public async Task<List<ProductReadDto>> GetAllAsync()
         {

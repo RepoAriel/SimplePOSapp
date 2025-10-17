@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa los datos necesarios para crear un nuevo producto.
+    /// </summary>
     public class ProductCreateDto
     {
         [Required(ErrorMessage = "El nombre del producto es obligatorio.")]

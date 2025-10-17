@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa los datos necesarios para actualizar un producto existente.
+    /// </summary>
     public class ProductUpdateDto
     {
         [Required(ErrorMessage = "El ID del producto es obligatorio.")]

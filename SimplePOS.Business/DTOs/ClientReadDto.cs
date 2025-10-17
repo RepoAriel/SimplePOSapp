@@ -1,5 +1,8 @@
 namespace SimplePOS.Business.DTOs
 {
+    /// <summary>
+    /// Representa los datos de un cliente para lectura.
+    /// </summary>
     public class ClientReadDto
     {
         public int Id { get; set; }
