@@ -11,6 +11,17 @@ using SimplePOS.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Definir la politica CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 //QuestPDF licencia
 QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
