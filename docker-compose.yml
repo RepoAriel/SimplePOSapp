@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  simplepos.api:
+    build:
+      context: .
+      dockerfile: SimplePOS.API/Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - simplepos-db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=simplepos-db;Database=SimplePOSDb;User=sa;Password=SimplePosDb123;TrustServerCertificate=True;Encrypt=False;
+
+  simplepos-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "SimplePosDb123"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sqlvolume:/var/opt/mssql
+
+volumes:
+  sqlvolume:

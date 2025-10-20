@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SimplePOS.API.Middlewares;
 using SimplePOS.Business.Extensions;
 using SimplePOS.Business.Mapping;
@@ -92,6 +93,10 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
+    //Aplica migraciones para crear la base de datos al iniciar la aplicación
+    context.Database.Migrate();
+
+    //Seed de datos iniciales
     await DbInitializer.SeedAsync(context, userManager, roleManager);
 }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SimplePOS.Domain.Entities;
 using SimplePOS.Infrastructure.Data;
 using SimplePOS.Infrastructure.Identity;
@@ -17,6 +18,36 @@ namespace SimplePOS.Infrastructure.Persistence
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager)
         {
+            if (!await roleManager.Roles.AnyAsync())
+            {
+                string[] roleNames = { "Admin", "Employee" };
+                foreach (var roleName in roleNames)
+                {
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+            var defaultUserEmail = "admin@simplepos.com";
+            var defaultPassword = "Admin123*";
+
+            if (await userManager.FindByEmailAsync(defaultUserEmail) == null)
+            {
+                var defaultUser = new ApplicationUser
+                {
+                    UserName = defaultUserEmail,
+                    Email = defaultUserEmail,
+                    EmailConfirmed = true,
+                };
+
+                var result = await userManager.CreateAsync(defaultUser, defaultPassword);
+
+                if (result.Succeeded)
+                {
+                    // Asignar el rol 'Admin' al usuario
+                    await userManager.AddToRoleAsync(defaultUser, "Admin");
+                }
+            }
+
             if (!context.Category.Any())
             {
                 var rand = new Random();
